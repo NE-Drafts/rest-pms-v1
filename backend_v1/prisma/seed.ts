@@ -1,5 +1,5 @@
 // prisma/seed.ts
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../src/generated/prisma';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -14,7 +14,7 @@ async function main() {
       firstName: 'Super',
       lastName: 'Admin',
       email: 'admin@parking.com',
-      phoneNumber: '1234567890',
+      phoneNumber: '07834567890',
       password: passwordHash,
       role: 'ADMIN',
     },

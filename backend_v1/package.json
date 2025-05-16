@@ -4,7 +4,7 @@
     "description": "Smart Parking System REST API with Prisma + PostgreSQL",
     "main": "dist/index.js",
     "scripts": {
-        "dev": "nodemon --exec ts-node ./src/server.ts",
+        "dev": "nodemon --watch src --exec ts-node src/server.ts",
         "build": "tsc",
         "start": "node dist/server.js",
         "prisma:generate": "prisma generate",
