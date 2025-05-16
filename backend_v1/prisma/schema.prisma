@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String   @unique
+  phoneNumber String
+  password    String
+  role        Role     @default(USER)
+  vehicles    Vehicle[]
+  sessions    ParkingSession[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Vehicle {
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  plateNumber String  @unique
+  vehicleType VehicleType
+  make       String
+  model      String
+  color      String
+  sessions   ParkingSession[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ParkingSlot {
+  id          String   @id @default(uuid())
+  slotNumber  String   @unique
+  slotSection String
+  slotFloor   String
+  slotType    SlotType
+  isActive    Boolean  @default(true)
+  isOccupied  Boolean  @default(false)
+  sessions    ParkingSession[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ParkingSession {
+  id             String   @id @default(uuid())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String
+  vehicle        Vehicle  @relation(fields: [vehicleId], references: [id])
+  vehicleId      String
+  parkingSlot    ParkingSlot @relation(fields: [parkingSlotId], references: [id])
+  parkingSlotId  String
+  startTime      DateTime
+  endTime        DateTime?
+  status         SessionStatus @default(ACTIVE)
+  totalAmount    Float    @default(0)
+  isPaid         Boolean  @default(false)
+  payment        Payment?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Payment {
+  id                  String   @id @default(uuid())
+  parkingSession      ParkingSession @relation(fields: [parkingSessionId], references: [id])
+  parkingSessionId    String @unique
+  amount              Float
+  paymentMethod       String
+  transactionReference String
+  status              PaymentStatus
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ParkingRate {
+  id           String   @id @default(uuid())
+  vehicleType  VehicleType
+  baseRate     Float
+  hourlyRate   Float
+  dailyMaximum Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Enums
+enum Role {
+  ADMIN
+  USER
+}
+
+enum VehicleType {
+  CAR
+  MOTORCYCLE
+  TRUCK
+}
+
+enum SlotType {
+  STANDARD
+  HANDICAPPED
+  RESERVED
+  ELECTRIC
+}
+
+enum SessionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
