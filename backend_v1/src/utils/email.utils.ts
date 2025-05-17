@@ -22,6 +22,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+console.log(SMTP_PORT);
+console.log(SMTP_SECURE);
+
 /**
  * Send an email
  */
