@@ -36,3 +36,29 @@ export const loginSchema = z.object({
     password: z.string().min(1, { message: "Password is required" }),
   }),
 });
+
+// Schema for requesting a password reset
+export const requestResetSchema = z.object({
+  body: z.object({
+    email: z.string().email({ message: "Valid email address is required" }),
+  }),
+});
+
+// Schema for resetting password with OTP
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    email: z.string().email({ message: "Valid email address is required" }),
+    otp: z
+      .string()
+      .length(6, { message: "OTP must be exactly 6 digits" })
+      .regex(/^\d{6}$/, { message: "OTP must contain only digits" }),
+    newPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" })
+      .max(24, { message: "Password must be at most 24 characters" })
+      .regex(passwordRegex, {
+        message:
+          "Password must include uppercase, lowercase, number, and special character",
+      }),
+  }),
+});

@@ -106,7 +106,7 @@ const prisma = new PrismaClient();
 /**
  * Create a new reservation request
  */
-export const createReservation = async (userId: number, data: CreateReservationInput) => {
+export const createReservation = async (userId: string, data: CreateReservationInput) => {
   try {
     // Parse the date string to a Date object (YYYY-MM-DD)
     const reservationDate = new Date(data.date);
@@ -157,7 +157,7 @@ export const createReservation = async (userId: number, data: CreateReservationI
 /**
  * Get all reservations for a user
  */
-export const getUserReservations = async (userId: number) => {
+export const getUserReservations = async (userId: string) => {
   try {
     return await prisma.reservation.findMany({
       where: {
@@ -208,7 +208,7 @@ export const getPendingReservations = async () => {
 /**
  * Get a reservation by ID
  */
-export const getReservationById = async (reservationId: number) => {
+export const getReservationById = async (reservationId: string) => {
   try {
     return await prisma.reservation.findUnique({
       where: {
@@ -236,8 +236,8 @@ export const getReservationById = async (reservationId: number) => {
  * Approve a reservation (admin only)
  */
 export const approveReservation = async (
-  reservationId: number,
-  adminId: number,
+  reservationId: string,
+  adminId: string,
   data: ApproveReservationInput
 ) => {
   try {
@@ -260,13 +260,13 @@ export const approveReservation = async (
     }
 
     // Check if the parking slot exists
-    const parkingSlot = await prisma.parkingSlot.findUnique({
+    const parkingSlotFound = await prisma.parkingSlot.findUnique({
       where: {
         id: data.parkingSlotId,
       },
     });
 
-    if (!parkingSlot) {
+    if (!parkingSlotFound) {
       throw new Error('Parking slot not found');
     }
 
@@ -301,11 +301,15 @@ export const approveReservation = async (
     });
 
     // Send approval email
+    // Access user and parkingSlot through type assertion since we included them above
+    const user = (updatedReservation as any).user;
+    const slotInfo = (updatedReservation as any).parkingSlot;
+    
     const formattedDate = updatedReservation.date.toISOString().split('T')[0];
     await sendApprovalEmail(
-      updatedReservation.user.email,
+      user.email,
       formattedDate,
-      updatedReservation.parkingSlot?.slotCode || 'N/A'
+      slotInfo?.slotCode || 'N/A'
     );
 
     return updatedReservation;
@@ -317,7 +321,7 @@ export const approveReservation = async (
 /**
  * Reject a reservation (admin only)
  */
-export const rejectReservation = async (reservationId: number) => {
+export const rejectReservation = async (reservationId: string) => {
   try {
     // Check if the reservation exists and is pending
     const reservation = await prisma.reservation.findUnique({
@@ -351,8 +355,9 @@ export const rejectReservation = async (reservationId: number) => {
     });
 
     // Send rejection email
+    const user = (updatedReservation as any).user;
     const formattedDate = updatedReservation.date.toISOString().split('T')[0];
-    await sendRejectionEmail(updatedReservation.user.email, formattedDate);
+    await sendRejectionEmail(user.email, formattedDate);
 
     return updatedReservation;
   } catch (error) {

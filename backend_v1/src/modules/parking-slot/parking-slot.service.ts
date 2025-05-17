@@ -12,44 +12,8 @@ export const getAllParkingSlots = async () => {
   }
 };
 
-// Get available parking slots for a specific date
-export const getAvailableParkingSlots = async (date: string) => {
-  try {
-    // Parse the date string to a Date object (YYYY-MM-DD)
-    const requestDate = new Date(date);
-    requestDate.setUTCHours(0, 0, 0, 0); // Set to start of day in UTC
-
-    // Find all slots that are not assigned to an approved reservation on the given date
-    const reservedSlotIds = await prisma.reservation.findMany({
-      where: {
-        date: requestDate,
-        status: 'APPROVED',
-      },
-      select: {
-        parkingSlotId: true,
-      },
-    });
-
-    // Extract the IDs of reserved slots
-    const reservedIds = reservedSlotIds
-      .map((reservation) => reservation.parkingSlotId)
-      .filter((id): id is number => id !== null);
-
-    // Find all slots that are not in the reserved IDs list
-    return await prisma.parkingSlot.findMany({
-      where: {
-        id: {
-          notIn: reservedIds,
-        },
-      },
-    });
-  } catch (error) {
-    throw error;
-  }
-};
-
 // Get a specific parking slot by ID
-export const getParkingSlotById = async (slotId: number) => {
+export const getParkingSlotById = async (slotId: string) => {
   try {
     return await prisma.parkingSlot.findUnique({
       where: { id: slotId },
@@ -73,8 +37,23 @@ export const createParkingSlot = async (data: ParkingSlotInput) => {
 };
 
 // Delete a parking slot (admin only)
-export const deleteParkingSlot = async (slotId: number) => {
+export const deleteParkingSlot = async (slotId: string) => {
   try {
+    // Check if parking slot exists
+    const parkingSlot = await prisma.parkingSlot.findUnique({
+      where: { id: slotId },
+      include: { reservations: true }
+    });
+
+    if (!parkingSlot) {
+      throw new Error('Parking slot not found');
+    }
+
+    // Check if parking slot has associated reservations
+    if (parkingSlot.reservations && parkingSlot.reservations.length > 0) {
+      throw new Error('Cannot delete parking slot that has associated reservations');
+    }
+
     return await prisma.parkingSlot.delete({
       where: { id: slotId },
     });

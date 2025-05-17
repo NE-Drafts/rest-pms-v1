@@ -30,7 +30,7 @@ router.use(authMiddleware as any);
 
 /**
  * @swagger
- * /api/vehicles:
+ * /vehicles:
  *   post:
  *     summary: Register a new vehicle
  *     tags: [Vehicles]
@@ -65,7 +65,7 @@ router.post('/', validate(createVehicleSchema), createVehicle as any);
 
 /**
  * @swagger
- * /api/vehicles:
+ * /vehicles:
  *   get:
  *     summary: Get all user's vehicles
  *     tags: [Vehicles]
@@ -81,7 +81,7 @@ router.get('/', getUserVehicles as any);
 
 /**
  * @swagger
- * /api/vehicles/{id}:
+ * /vehicles/{id}:
  *   get:
  *     summary: Get a vehicle by ID
  *     tags: [Vehicles]
@@ -92,7 +92,8 @@ router.get('/', getUserVehicles as any);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Vehicle ID
  *     responses:
  *       200:
@@ -106,7 +107,7 @@ router.get('/:id', getVehicleById as any);
 
 /**
  * @swagger
- * /api/vehicles/{id}:
+ * /vehicles/{id}:
  *   put:
  *     summary: Update a vehicle
  *     tags: [Vehicles]
@@ -117,7 +118,8 @@ router.get('/:id', getVehicleById as any);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Vehicle ID
  *     requestBody:
  *       required: true
@@ -147,7 +149,7 @@ router.put('/:id', validate(updateVehicleSchema), updateVehicle as any);
 
 /**
  * @swagger
- * /api/vehicles/{id}:
+ * /vehicles/{id}:
  *   delete:
  *     summary: Delete a vehicle
  *     tags: [Vehicles]
@@ -158,7 +160,8 @@ router.put('/:id', validate(updateVehicleSchema), updateVehicle as any);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Vehicle ID
  *     responses:
  *       204:

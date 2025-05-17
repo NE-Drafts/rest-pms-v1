@@ -5,7 +5,7 @@ import { CreateVehicleInput, UpdateVehicleInput } from './vehicle.validator';
 const prisma = new PrismaClient();
 
 // Add a new vehicle for a user
-export const createVehicle = async (userId: number, data: CreateVehicleInput) => {
+export const createVehicle = async (userId: string, data: CreateVehicleInput) => {
   try {
     return await prisma.vehicle.create({
       data: {
@@ -20,7 +20,7 @@ export const createVehicle = async (userId: number, data: CreateVehicleInput) =>
 };
 
 // Get all vehicles for a user
-export const getUserVehicles = async (userId: number) => {
+export const getUserVehicles = async (userId: string) => {
   try {
     return await prisma.vehicle.findMany({
       where: { userId },
@@ -31,7 +31,7 @@ export const getUserVehicles = async (userId: number) => {
 };
 
 // Get a vehicle by ID
-export const getVehicleById = async (vehicleId: number, userId: number) => {
+export const getVehicleById = async (vehicleId: string, userId: string) => {
   try {
     return await prisma.vehicle.findFirst({
       where: {
@@ -46,8 +46,8 @@ export const getVehicleById = async (vehicleId: number, userId: number) => {
 
 // Update a vehicle
 export const updateVehicle = async (
-  vehicleId: number,
-  userId: number,
+  vehicleId: string,
+  userId: string,
   data: UpdateVehicleInput
 ) => {
   try {
@@ -73,7 +73,7 @@ export const updateVehicle = async (
 };
 
 // Delete a vehicle
-export const deleteVehicle = async (vehicleId: number, userId: number) => {
+export const deleteVehicle = async (vehicleId: string, userId: string) => {
   try {
     // First check if the vehicle belongs to the user
     const vehicle = await prisma.vehicle.findFirst({

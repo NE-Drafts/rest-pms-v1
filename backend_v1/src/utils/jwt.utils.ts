@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config()
 
 interface JwtPayload {
-  userId: number;
+  userId: string;
   role: 'USER' | 'ADMIN';
 }
 

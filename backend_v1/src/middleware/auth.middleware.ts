@@ -5,7 +5,7 @@ import { Role } from '../generated/prisma';
 
 export interface AuthRequest extends Request {
   user?: {
-    id: number;
+    id: string;
     role: Role;
   };
 }
@@ -17,7 +17,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
       return res.status(401).json({ message: 'No token provided' });
     }
 
-    const decoded = verifyToken(token) as { userId: number; role: Role };
+    const decoded = verifyToken(token) as { userId: string; role: Role };
 
     req.user = {
       id: decoded.userId,

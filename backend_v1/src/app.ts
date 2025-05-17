@@ -2,8 +2,7 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import helmet from 'helmet';
-import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './docs/swagger';
+import { setupSwagger } from './docs/swagger';
 
 // Middleware
 import { errorHandler } from './middleware/error.middleware';
@@ -33,8 +32,8 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/parking-slots', parkingSlotRoutes);
 app.use('/api/reservations', reservationRoutes);
 
-// API documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// Setup API documentation
+setupSwagger(app);
 
 // Health check endpoint
 app.get('/', (req: Request, res: Response) => {

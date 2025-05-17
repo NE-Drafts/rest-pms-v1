@@ -13,34 +13,15 @@ export const getAllParkingSlots = async (req: Request, res: Response) => {
   }
 };
 
-// Get available parking slots for a specific date
-export const getAvailableParkingSlots = async (req: Request, res: Response) => {
-  try {
-    const { date } = req.query;
-    
-    if (!date || typeof date !== 'string') {
-      return res.status(400).json({ error: 'Date parameter is required (format: YYYY-MM-DD)' });
-    }
-
-    // Validate date format (YYYY-MM-DD)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(date)) {
-      return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
-    }
-
-    const slots = await parkingSlotService.getAvailableParkingSlots(date);
-    res.json(slots);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
 // Get a specific parking slot
 export const getParkingSlotById = async (req: Request, res: Response) => {
   try {
-    const slotId = parseInt(req.params.id);
-    if (isNaN(slotId)) {
-      return res.status(400).json({ error: 'Invalid parking slot ID' });
+    const slotId = req.params.id;
+
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(slotId)) {
+      return res.status(400).json({ error: 'Invalid parking slot ID format' });
     }
 
     const slot = await parkingSlotService.getParkingSlotById(slotId);
@@ -61,7 +42,7 @@ export const createParkingSlot = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const slot = await parkingSlotService.createParkingSlot(req.body.body);
+    const slot = await parkingSlotService.createParkingSlot(req.body);
     res.status(201).json(slot);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -75,14 +56,23 @@ export const deleteParkingSlot = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const slotId = parseInt(req.params.id);
-    if (isNaN(slotId)) {
-      return res.status(400).json({ error: 'Invalid parking slot ID' });
+    const slotId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(slotId)) {
+      return res.status(400).json({ error: 'Invalid parking slot ID format' });
     }
 
     await parkingSlotService.deleteParkingSlot(slotId);
     res.status(204).send();
   } catch (error: any) {
+    if (error.message.includes('not found')) {
+      return res.status(404).json({ error: error.message });
+    }
+    if (error.message.includes('Cannot delete')) {
+      return res.status(400).json({ error: error.message });
+    }
     res.status(500).json({ error: error.message });
   }
 };

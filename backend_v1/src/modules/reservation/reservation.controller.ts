@@ -60,9 +60,12 @@ export const getReservationById = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const reservationId = parseInt(req.params.id);
-    if (isNaN(reservationId)) {
-      return res.status(400).json({ error: 'Invalid reservation ID' });
+    const reservationId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(reservationId)) {
+      return res.status(400).json({ error: 'Invalid reservation ID format' });
     }
 
     const reservation = await reservationService.getReservationById(reservationId);
@@ -72,7 +75,7 @@ export const getReservationById = async (req: AuthRequest, res: Response) => {
     }
 
     // Only admin or the reservation owner can view the reservation
-    if (req.user.role !== Role.ADMIN && reservation.user.id !== req.user.id) {
+    if (req.user.role !== Role.ADMIN && reservation.userId !== req.user.id) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -91,9 +94,12 @@ export const approveReservation = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const reservationId = parseInt(req.params.id);
-    if (isNaN(reservationId)) {
-      return res.status(400).json({ error: 'Invalid reservation ID' });
+    const reservationId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(reservationId)) {
+      return res.status(400).json({ error: 'Invalid reservation ID format' });
     }
 
     const reservation = await reservationService.approveReservation(
@@ -117,9 +123,12 @@ export const rejectReservation = async (req: AuthRequest, res: Response) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const reservationId = parseInt(req.params.id);
-    if (isNaN(reservationId)) {
-      return res.status(400).json({ error: 'Invalid reservation ID' });
+    const reservationId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(reservationId)) {
+      return res.status(400).json({ error: 'Invalid reservation ID format' });
     }
 
     const reservation = await reservationService.rejectReservation(reservationId);

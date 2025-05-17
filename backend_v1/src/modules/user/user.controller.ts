@@ -29,7 +29,7 @@ export const getAllUsers = async (req: AuthRequest, res: Response, next: NextFun
       return res.status(403).json({ message: "Admin access required" });
     }
     
-    const users = await userService.getAllUsers();
+    const users = await userService.getAllUsers((req as any).pagination || {});
     res.json(users);
   } catch (err) {
     next(err);
@@ -38,10 +38,12 @@ export const getAllUsers = async (req: AuthRequest, res: Response, next: NextFun
 
 export const getUserById = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
+    // UUID validation - simple regex check for UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
     }
     
     const user = await userService.getUserById(userId);
@@ -62,10 +64,12 @@ export const deleteUser = async (req: AuthRequest, res: Response, next: NextFunc
       return res.status(403).json({ message: "Admin access required" });
     }
     
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
+    // UUID validation - simple regex check for UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(userId)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
     }
     
     await userService.deleteUser(userId);

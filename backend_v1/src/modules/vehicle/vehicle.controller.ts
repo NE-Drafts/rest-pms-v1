@@ -65,7 +65,7 @@ export const createVehicle = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const vehicle = await vehicleService.createVehicle(req.user.id, req.body.body);
+    const vehicle = await vehicleService.createVehicle(req.user.id, req.body);
     res.status(201).json(vehicle);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -93,9 +93,12 @@ export const getVehicleById = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const vehicleId = parseInt(req.params.id);
-    if (isNaN(vehicleId)) {
-      return res.status(400).json({ error: 'Invalid vehicle ID' });
+    const vehicleId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(vehicleId)) {
+      return res.status(400).json({ error: 'Invalid vehicle ID format' });
     }
 
     const vehicle = await vehicleService.getVehicleById(vehicleId, req.user.id);
@@ -116,9 +119,12 @@ export const updateVehicle = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const vehicleId = parseInt(req.params.id);
-    if (isNaN(vehicleId)) {
-      return res.status(400).json({ error: 'Invalid vehicle ID' });
+    const vehicleId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(vehicleId)) {
+      return res.status(400).json({ error: 'Invalid vehicle ID format' });
     }
 
     const vehicle = await vehicleService.updateVehicle(
@@ -142,9 +148,12 @@ export const deleteVehicle = async (req: AuthRequest, res: Response) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const vehicleId = parseInt(req.params.id);
-    if (isNaN(vehicleId)) {
-      return res.status(400).json({ error: 'Invalid vehicle ID' });
+    const vehicleId = req.params.id;
+    
+    // UUID validation
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(vehicleId)) {
+      return res.status(400).json({ error: 'Invalid vehicle ID format' });
     }
 
     await vehicleService.deleteVehicle(vehicleId, req.user.id);

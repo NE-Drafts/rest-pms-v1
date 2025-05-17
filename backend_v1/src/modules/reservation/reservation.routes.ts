@@ -18,7 +18,7 @@ router.use(authMiddleware as any);
 
 /**
  * @swagger
- * /api/reservations:
+ * /reservations:
  *   post:
  *     summary: Create a new parking reservation request
  *     tags: [Reservations]
@@ -35,7 +35,8 @@ router.use(authMiddleware as any);
  *               - date
  *             properties:
  *               vehicleId:
- *                 type: integer
+ *                 type: string
+ *                 format: uuid
  *                 description: The ID of user's vehicle
  *               date:
  *                 type: string
@@ -53,7 +54,7 @@ router.post('/', validate(createReservationSchema), createReservation as any);
 
 /**
  * @swagger
- * /api/reservations:
+ * /reservations:
  *   get:
  *     summary: Get all user's reservations
  *     tags: [Reservations]
@@ -69,7 +70,7 @@ router.get('/', getUserReservations as any);
 
 /**
  * @swagger
- * /api/reservations/pending:
+ * /reservations/pending:
  *   get:
  *     summary: Get all pending reservations (Admin only)
  *     tags: [Reservations]
@@ -87,7 +88,7 @@ router.get('/pending', requireAdmin as any, getPendingReservations as any);
 
 /**
  * @swagger
- * /api/reservations/{id}:
+ * /reservations/{id}:
  *   get:
  *     summary: Get a reservation by ID
  *     tags: [Reservations]
@@ -98,7 +99,8 @@ router.get('/pending', requireAdmin as any, getPendingReservations as any);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Reservation ID
  *     responses:
  *       200:
@@ -114,7 +116,7 @@ router.get('/:id', getReservationById as any);
 
 /**
  * @swagger
- * /api/reservations/{id}/approve:
+ * /reservations/{id}/approve:
  *   put:
  *     summary: Approve a reservation and assign a parking slot (Admin only)
  *     tags: [Reservations]
@@ -125,7 +127,8 @@ router.get('/:id', getReservationById as any);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Reservation ID to approve
  *     requestBody:
  *       required: true
@@ -137,7 +140,8 @@ router.get('/:id', getReservationById as any);
  *               - parkingSlotId
  *             properties:
  *               parkingSlotId:
- *                 type: integer
+ *                 type: string
+ *                 format: uuid
  *                 description: The ID of parking slot to assign
  *     responses:
  *       200:
@@ -155,7 +159,7 @@ router.put('/:id/approve', requireAdmin as any, validate(approveReservationSchem
 
 /**
  * @swagger
- * /api/reservations/{id}/reject:
+ * /reservations/{id}/reject:
  *   put:
  *     summary: Reject a reservation request (Admin only)
  *     tags: [Reservations]
@@ -166,7 +170,8 @@ router.put('/:id/approve', requireAdmin as any, validate(approveReservationSchem
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Reservation ID to reject
  *     responses:
  *       200:

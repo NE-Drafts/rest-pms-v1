@@ -4,7 +4,6 @@ import { validate } from '../../middleware/validate.middleware';
 import { parkingSlotSchema } from './parking-slot.validator';
 import {
   getAllParkingSlots,
-  getAvailableParkingSlots,
   getParkingSlotById,
   createParkingSlot,
   deleteParkingSlot,
@@ -14,7 +13,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/parking-slots:
+ * /parking-slots:
  *   get:
  *     summary: Get all parking slots
  *     tags: [Parking Slots]
@@ -26,29 +25,7 @@ router.get('/', getAllParkingSlots);
 
 /**
  * @swagger
- * /api/parking-slots/available:
- *   get:
- *     summary: Get available parking slots for a specific date
- *     tags: [Parking Slots]
- *     parameters:
- *       - in: query
- *         name: date
- *         required: true
- *         schema:
- *           type: string
- *           format: date
- *         description: Date to check availability (YYYY-MM-DD)
- *     responses:
- *       200:
- *         description: List of available parking slots
- *       400:
- *         description: Invalid date format
- */
-router.get('/available', getAvailableParkingSlots);
-
-/**
- * @swagger
- * /api/parking-slots/{id}:
+ * /parking-slots/{id}:
  *   get:
  *     summary: Get a parking slot by ID
  *     tags: [Parking Slots]
@@ -57,7 +34,8 @@ router.get('/available', getAvailableParkingSlots);
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Parking slot ID
  *     responses:
  *       200:
@@ -69,7 +47,7 @@ router.get('/:id', getParkingSlotById);
 
 /**
  * @swagger
- * /api/parking-slots:
+ * /parking-slots:
  *   post:
  *     summary: Create a new parking slot (Admin only)
  *     tags: [Parking Slots]
@@ -101,7 +79,7 @@ router.post('/', authMiddleware as any, requireAdmin as any, validate(parkingSlo
 
 /**
  * @swagger
- * /api/parking-slots/{id}:
+ * /parking-slots/{id}:
  *   delete:
  *     summary: Delete a parking slot (Admin only)
  *     tags: [Parking Slots]
@@ -112,7 +90,8 @@ router.post('/', authMiddleware as any, requireAdmin as any, validate(parkingSlo
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
+ *           format: uuid
  *         description: Parking slot ID to delete
  *     responses:
  *       204:
